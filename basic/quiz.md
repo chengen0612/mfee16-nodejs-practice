@@ -13,12 +13,12 @@ console.log("start");
 console.log("end");
 ```
 
-console:
-  start
-  IIFE
-  end
+console:  
+  start  
+  IIFE  
+  end  
   Timeout
-
+  
 why:
   函式中的setTimeout被設定為一秒後執行，因此Timeout會在最後才被印出。
 
@@ -39,10 +39,10 @@ console.log("start");
 console.log("end");
 ```
 
-console:
-  start
-  IIFE
-  end
+console:  
+  start  
+  IIFE  
+  end  
   Timeout
 
 why:
@@ -66,9 +66,9 @@ const foo = () => {
 foo();
 ```
 
-console:
-  foo
-  bar
+console:  
+  foo  
+  bar  
   baz
 
 why:
@@ -92,12 +92,10 @@ const foo = () => {
 foo();
 ```
 
-console:
-  foo
-  baz
+console:  
+  foo  
+  baz  
   bar
 
 why:
   函式foo由上至下執行並在執行setTimeout後將bar丟給webAPI處理，因此bar會等到最後才被印出。
-
----
