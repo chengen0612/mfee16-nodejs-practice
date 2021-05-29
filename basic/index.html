@@ -34,10 +34,11 @@
         // URL
         // async: true(default) / false
         // 設定 > 連上後做的事(callback) > 發出請求
+        // 因為onload是callback，前後順序不影響執行
         xhr.open("GET", "http://34.217.120.25:3000", true);
 
         // xhr.addEventListener('load', function() {});
-        xhr.onload = function (response) {
+        xhr.onload = function () {
             message.innerText = `非同步請求 load ${this.responseText}`;
         };
 
@@ -51,7 +52,7 @@
 
         xhr.open("GET", "http://34.217.120.25:3000", false);
 
-        xhr.onload = function (response) {
+        xhr.onload = function () {
             message.innerText = `同步請求 load ${this.responseText}`;
         };
 
