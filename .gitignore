@@ -1,1 +1,7 @@
 crawler/node_modules
+
+crawler/stock.txt
+
+logs
+*.log
+
