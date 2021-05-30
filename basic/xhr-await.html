@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XHR</title>
+  </head>
+  <body>
+    <button id="syncBtn">同步</button>
+    <button id="asyncBtn">非同步(promise)</button>
+    <button id="countBtn">計數器</button>
+    <div id="count">0</div>
+    <div id="message">XXXXX</div>
+  </body>
+  <script>
+    var syncBtn = document.getElementById("syncBtn");
+    var asyncBtn = document.getElementById("asyncBtn");
+    var countBtn = document.getElementById("countBtn");
+    var count = document.getElementById("count");
+    var message = document.getElementById("message");
+
+    countBtn.addEventListener("click", function () {
+      count.innerText = parseInt(count.innerText, 10) + 1;
+    });
+
+    // XMLHttpRequest
+    let xhrPromise = function () {
+      return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
+        // console.log(xhr);
+        xhr.open("GET", "http://34.217.120.25:3000", true);
+        xhr.send();
+        xhr.onerror = () => {
+          reject(xhr.statusText);
+        };
+        xhr.onload = function () {
+          if (this.status === 200) {
+            resolve(this.responseText);
+          } else {
+            reject(this.status);
+          };
+        };
+      });
+    };
+
+    // async request fit async function
+    asyncBtn.addEventListener("click", async function () {
+        try {
+            let msg = await xhrPromise();
+            message.innerText = `非同步請求 成功: ${msg}`;
+        } catch (err) {
+            message.innerText = `非同步請求 錯誤: ${err.message}`;
+        };
+    });
+
+    // sync request
+    syncBtn.addEventListener("click", function () {
+      var xhr = new XMLHttpRequest();
+
+      xhr.open("GET", "http://34.217.120.25:3000", false);
+
+      xhr.onload = function () {
+        message.innerText = `同步請求 成功: ${this.responseText}`;
+      };
+
+      xhr.send();
+    });
+  </script>
+</html>
