@@ -40,27 +40,56 @@ function fsPromise() {
 
 
 // axios API
-function searchStock(queryNum) {
-    axios({
-        method: 'get',
-        url: 'https://www.twse.com.tw/exchangeReport/STOCK_DAY',
-        params: {
-            response: JSON,
-            date: 20210501,
-            stockNo: queryNum
-        }
-    })
-        .then(function (response) {
-            console.log(response.data)
-        });
-};
+// function searchStock(queryNum) {
+//     axios({
+//         method: 'get',
+//         url: 'https://www.twse.com.tw/exchangeReport/STOCK_DAY',
+//         params: {
+//             response: JSON,
+//             date: 20210501,
+//             stockNo: queryNum
+//         }
+//     })
+//         .then(function (response) {
+//             console.log(response.data)
+//         });
+// };
 
 
 // read file and search
-fsPromise()
-    .then((result) => {
-        return searchStock(result);
-    })
-    .catch((err) => {
+// fsPromise()
+//     .then((stockNo) => {
+//         return axios.get('https://www.twse.com.tw/exchangeReport/STOCK_DAY', {
+//             params: {
+                // response: JSON,
+                // date: 20210501,
+                // stockNo: stockNo
+//             }
+//         });
+//     })
+//     .then((result) => {
+//         console.log(result.data.data)
+//     })
+//     .catch((err) => {
+//         console.log(err);
+//     });
+
+
+// async function
+(async function() {
+    try {
+        let stockNo = await fsPromise();
+        let result = await axios.get('https://www.twse.com.tw/exchangeReport/STOCK_DAY', {
+            params: {
+                response: JSON,
+                date: 20210501,
+                stockNo: stockNo
+            }
+        });
+        console.log(result.data.data);
+    } catch (err) {
         console.log(err);
-    });
+    } finally {
+        console.log('end of function');
+    };
+})();
