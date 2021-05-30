@@ -48,10 +48,10 @@
     asyncBtn.addEventListener("click", function () {
       xhrPromise()
         .then((result) => {
-          message.innerText = result;
+          message.innerText = `非同步請求 成功: ${result}`;
         })
         .catch((err) => {
-          console.log(err);
+          console.log(`非同步請求 錯誤: ${err}`);
         })
         .finally((state) => {
           // state is undefined
@@ -65,7 +65,7 @@
       xhr.open("GET", "http://34.217.120.25:3000", false);
 
       xhr.onload = function () {
-        message.innerText = `同步請求 load ${this.responseText}`;
+        message.innerText = `同步請求 成功: ${this.responseText}`;
       };
 
       xhr.send();
