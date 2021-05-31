@@ -1,4 +1,4 @@
-// get local date
+// get local date with raw javascript
 const now = new Date().toLocaleString('zh-TW', {timeZone: 'Asia/Taipei'});
 // 2021/5/31 上午9:50:23
 const sep = now.split(' ');
