@@ -6,7 +6,8 @@
   "dependencies": {
     "axios": "^0.21.1",
     "bluebird": "^3.7.2",
-    "dayjs": "^1.10.5"
+    "dayjs": "^1.10.5",
+    "mysql": "^2.18.1"
   },
   "devDependencies": {},
   "scripts": {
