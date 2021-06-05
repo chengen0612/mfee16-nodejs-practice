@@ -1,39 +1,55 @@
-// url for testing
-// https://www.twse.com.tw/exchangeReport/STOCK_DAY?
-// response=json&
-// date=20210501&
-// stockNo=2603
-
-
 // use packages
 const axios = require('axios');
 const fs = require("fs/promises"); // Promise base
 const dayjs = require('dayjs');
+const mysql = require('mysql');
+const Promise = require('bluebird');
 
 
 // get local date
 const today = dayjs().format('YYYYMMDD');
 
 
-// read file and search
-fs.readFile("stock.txt", "utf8")
-    .then((stockCode) => {
-        return axios({
-            method: 'get',
-            url: 'https://www.twse.com.tw/exchangeReport/STOCK_DAY',
-            params: {
-                response: JSON,
-                date: today,
-                stockNo: stockCode
-            }
-        })
-    })
-    .then((result) => {
-        if (result.status === 200 ) {
-            console.log(result.data.date);
-            console.log(result.data.title);
+// create connection
+let connection = mysql.createConnection({
+    host     : 'localhost',
+    user     : 'tester',
+    password : 'tester',
+    database : 'stock'
+});
+
+
+// promisify mysql with bluebird's method
+connection = Promise.promisifyAll(connection);
+
+
+// go
+(async function() {
+    try {
+        await connection.connectAsync();
+        let stockCode = await fs.readFile("stock.txt", "utf8");
+        // verification
+        let ver = await connection.queryAsync(`SELECT stock_id FROM stock WHERE stock_id = '${stockCode}'`);
+        if (ver.length === 0) {
+            let response = await axios.get(`https://www.twse.com.tw/zh/api/codeQuery?query=${stockCode}`);
+            if (response.status === 200){
+                // console.log('query success');
+                let target = response.data.suggestions
+                    .map((item) => {
+                        return item.split('\t');
+                    })
+                    .find((item) => {
+                        return item[0] === stockCode;
+                    });
+                // insert
+                await connection.queryAsync(`INSERT INTO stock (stock_id, stock_name) VALUES ('${target[0]}', '${target[1]}')`);
+            };
+        } else {
+            console.log('該筆資料已存在');
         };
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+    } catch (err) {
+        console.error(err);
+    } finally {
+        connection.endAsync();
+    };
+})();
