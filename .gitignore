@@ -5,3 +5,4 @@ crawler/stock.txt
 logs
 *.log
 
+.env
