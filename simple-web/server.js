@@ -34,5 +34,5 @@ const server = http.createServer((req, res) => {
 // only recieve request to 3000 port.
 // if request had made, run executor(callback) set by http.createServer
 server.listen(3000, () => {
-    console.log("設置監聽事件: 接收向 3000 port 發出的連線請求")
+    console.log("設置監聽事件: 接收向 3000 port 發出的連線請求");
 });
