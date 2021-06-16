@@ -12,7 +12,7 @@ const today = dayjs().format('YYYYMMDD');
 // create connection
 let connection = mysql.createConnection({
   host     : process.env.DB_HOST,
-    port     : process.env.DB_PORT,
+  port     : process.env.DB_PORT,
   user     : process.env.DB_USER,
   password : process.env.DB_PASSWORD,
   database : process.env.DB_NAME,
@@ -94,7 +94,7 @@ async function gainData(stockCode) {
     if (result.affectedRows > 0) {
       console.log(`成功新增${result.affectedRows}筆資料`)
     } else {
-      console.log('已經新增至最新資料');
+      console.log('已經更新至最新資料');
     };
 
   } catch (err) {
