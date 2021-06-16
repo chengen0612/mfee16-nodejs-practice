@@ -10,18 +10,29 @@ const server = http.createServer((req, res) => {
   console.log('收到連線請求...');
   console.log('請求連線到網址:', req.url); // url client trying to access
 
+  // remove query string, unnecessary / at the end, also force the whole url into lowercase
+  const path = req.url.replace(/\/?(?:\?.*)?$/, "").toLocaleLowerCase();
+  console.log(`path: ${path}`);
+
+  // create url obj
+  const url = new URL(req.url, `http://${req.headers.host}`);
+
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain; charset=UTF-8');
 
-  switch (req.url) {
-    case '/' :
+  switch (path) {
+    //   case '/' :
+    case '' :
       res.end('這是首頁');
       break;
     case '/test' :
       res.end('這是測試頁');
       break;
     case '/about' :
-      res.end('這是關於我們');
+      // use query parameters
+      const params = url.searchParams;
+      const name = params.get('name') || '訪客'; // default setting behind
+      res.end(`Hi, ${name}\n這是關於我們`);
       break;
     // if not exist
     default:
