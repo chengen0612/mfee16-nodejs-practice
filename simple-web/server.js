@@ -21,7 +21,7 @@ const server = http.createServer((req, res) => {
   res.setHeader('Content-Type', 'text/plain; charset=UTF-8');
 
   switch (path) {
-    //   case '/' :
+    // case '/' :
     case '' :
       res.end('這是首頁');
       break;
