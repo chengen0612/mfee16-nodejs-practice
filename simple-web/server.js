@@ -5,28 +5,31 @@ const fs = require('fs/promises');
 
 // set up server maker
 // check out what's inside the request obj with console
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   // handle incoming request here
   console.log('收到連線請求...');
   console.log('請求連線到網址:', req.url); // url client trying to access
 
+  // deal with req.url
   // remove query string, unnecessary / at the end, also force the whole url into lowercase
   const path = req.url.replace(/\/?(?:\?.*)?$/, "").toLocaleLowerCase();
-  console.log(`path: ${path}`);
 
   // create url obj
   const url = new URL(req.url, `http://${req.headers.host}`);
 
+  // basic settings
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain; charset=UTF-8');
 
   switch (path) {
-    // case '/' :
     case '' :
       res.end('這是首頁');
       break;
     case '/test' :
-      res.end('這是測試頁');
+      // return specific page
+      res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+      const response = await fs.readFile('test.html');
+      res.end(response);
       break;
     case '/about' :
       // use query parameters
