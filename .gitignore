@@ -6,3 +6,5 @@ logs
 *.log
 
 .env
+
+simple-express/public/uploads
