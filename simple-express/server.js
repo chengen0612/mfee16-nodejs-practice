@@ -1,6 +1,7 @@
 // make connection
 const express = require('express');
 const app = express();
+const connection = require('./utils/db');
 
 // express.static('path');
 // 可以指定一個或多個靜態資源目錄，並自動為目錄底下的資源建立路由
@@ -39,8 +40,17 @@ app.get('/product', (req, res) => {
   res.send('這是商品目錄');
 });
 
+app.get('/stock', async (req, res) => {
+  let result = await connection.queryAsync('SELECT * FROM stock');
+  res.render('stock/list', {
+    stocks : result
+  });
+});
+
 // event listener
 // already set server secretly, no need to create server before routing
-app.listen(3000, () => {
+app.listen(3000, async () => {
+  // create connection
+  await connection.connectAsync();
   console.log('我要接收 3000 port 的請求');
 });
