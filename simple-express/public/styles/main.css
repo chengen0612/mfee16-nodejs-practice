@@ -1,0 +1,29 @@
+* {
+  box-sizing: border-box;
+}
+
+table {
+  background: #eee;
+  border-spacing: 0;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+thead {
+  font-weight: bold;
+}
+
+tbody tr:nth-child(odd) {
+  background: #fff;
+}
+
+tr {
+  text-align: center;
+}
+
+th,
+td {
+  padding: 10px 20px;
+  border: 0;
+}
