@@ -4,7 +4,15 @@ const app = express();
 
 // express.static('path');
 // 可以指定一個或多個靜態資源目錄，並自動為目錄底下的資源建立路由
+// 網址列設定正確路徑就可以直接找到靜態目錄裡面的檔案
 app.use(express.static('public'));
+
+// app.set('views', 'views');
+// 設定中間件 views
+// 第一個是固定的變數 views，第二個是檔案夾名稱
+app.set('views', 'views');
+// 告訴 express 我們要用 pug 套件做渲染
+app.set('view engine', 'pug');
 
 // middleware
 // do something before routing
@@ -16,11 +24,15 @@ app.use((req, res, next) => {
 
 // router
 app.get('', (req, res) => {
-  res.send('這是主頁');
+  // res.send('這是主頁');
+  // 到 views dir 底下找到 index.pug
+  res.render('index');
 });
 
 app.get('/about', (req, res) => {
-  res.send('這是關於我們');
+  // res.send('這是關於我們');
+  // 到 views dir 底下找到 about.pug
+  res.render('about');
 });
 
 app.get('/product', (req, res) => {
