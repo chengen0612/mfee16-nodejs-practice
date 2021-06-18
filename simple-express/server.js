@@ -2,6 +2,10 @@
 const express = require('express');
 const app = express();
 
+// express.static('path');
+// 可以指定一個或多個靜態資源目錄，並自動為目錄底下的資源建立路由
+app.use(express.static('public'));
+
 // middleware
 // do something before routing
 app.use((req, res, next) => {
