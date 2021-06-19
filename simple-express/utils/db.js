@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const Promise = require('bluebird');
-require('dotenv').config();
+// require('dotenv').config();
+require('dotenv').config({path : './utils/.env'});
 
 let connection = mysql.createConnection({
   host : process.env.DB_HOST,

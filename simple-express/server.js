@@ -9,14 +9,12 @@ const connection = require('./utils/db');
 app.use(express.static('public'));
 
 // app.set('views', 'views');
-// 設定中間件 views
 // 第一個是固定的變數 views，第二個是檔案夾名稱
 app.set('views', 'views');
 // 告訴 express 我們要用 pug 套件做渲染
 app.set('view engine', 'pug');
 
-// middleware
-// do something before routing
+// self-built middleware
 app.use((req, res, next) => {
   let now = new Date().toLocaleString();
   console.log(`有訪客在 ${now} 時來訪`);
@@ -25,14 +23,10 @@ app.use((req, res, next) => {
 
 // router
 app.get('', (req, res) => {
-  // res.send('這是主頁');
-  // 到 views dir 底下找到 index.pug
   res.render('index');
 });
 
 app.get('/about', (req, res) => {
-  // res.send('這是關於我們');
-  // 到 views dir 底下找到 about.pug
   res.render('about');
 });
 
@@ -40,22 +34,20 @@ app.get('/product', (req, res) => {
   res.send('這是商品目錄');
 });
 
-// router handling path </stock>
-let stockRouter = require('./routes/stock');
+// self-built routers
+const stockRouter = require('./routes/stock');
 app.use('/stock', stockRouter);
 
-let apiRouter = require('./routes/api');
+const apiRouter = require('./routes/api');
 app.use('/api', apiRouter);
 
-// 404
-// 前面路由都找不到
+// didn't catch by any router above
 app.use((req, res, next) => {
   res.status(404);
   res.render('404');
 });
 
-// 500
-// 最後一關，放在所有路由後面
+// lastly
 app.use((err, req, res, next) => {
   res.status(500);
   res.send('伺服器異常，請洽系統管理員');
