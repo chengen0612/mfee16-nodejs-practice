@@ -40,23 +40,26 @@ app.get('/product', (req, res) => {
   res.send('這是商品目錄');
 });
 
-app.get('/stock', async (req, res) => {
-  let result = await connection.queryAsync('SELECT * FROM stock');
-  res.render('stock/list', {
-    stocks : result
-  });
+// router handling path </stock>
+let stockRouter = require('./routes/stock');
+app.use('/stock', stockRouter);
+
+let apiRouter = require('./routes/api');
+app.use('/api', apiRouter);
+
+// 404
+// 前面路由都找不到
+app.use((req, res, next) => {
+  res.status(404);
+  res.render('查無此頁');
 });
 
-app.get('/stock/:stockCode', async (req, res) => {
-  let stockCode = req.params.stockCode;
-  let data = await connection.queryAsync('SELECT * FROM stock_price WHERE stock_id = ?;',
-    req.params.stockCode
-  );
-  // console.log(data);
-  res.render('stock/detail', {
-    code : stockCode,
-    stocks : data
-  });
+// 505
+// 最後一關，放在所有路由後面
+app.use((err, req, res, next) => {
+  console.log(err.message);
+  res.status(500);
+  res.send('伺服器異常，請洽系統管理員');
 });
 
 // event listener
