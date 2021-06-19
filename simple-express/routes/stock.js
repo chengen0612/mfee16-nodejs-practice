@@ -13,10 +13,11 @@ router.get('/:stockCode', async (req, res) => {
   const stockCode = req.params.stockCode;
   const currentPage = req.query.page || 1;
   const limit = 10;
+  const start = (currentPage - 1) * limit;
 
   const data = await connection.queryAsync(
-    `SELECT * FROM stock_price WHERE stock_id = ? LIMIT ${currentPage}, ${limit}`,
-    stockCode
+    'SELECT * FROM stock_price WHERE stock_id = ? LIMIT ?, ?',
+    [stockCode, start, limit]
   );
 
   // error handling
@@ -36,7 +37,6 @@ router.get('/:stockCode', async (req, res) => {
     code : stockCode,
     stocks : data,
     pagination : {
-      total,
       number,
     }
   });
