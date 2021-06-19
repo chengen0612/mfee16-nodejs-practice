@@ -51,13 +51,12 @@ app.use('/api', apiRouter);
 // 前面路由都找不到
 app.use((req, res, next) => {
   res.status(404);
-  res.render('查無此頁');
+  res.render('404');
 });
 
-// 505
+// 500
 // 最後一關，放在所有路由後面
 app.use((err, req, res, next) => {
-  console.log(err.message);
   res.status(500);
   res.send('伺服器異常，請洽系統管理員');
 });

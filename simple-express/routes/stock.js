@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
   });
 });
 
-router.get('/:stockCode', async (req, res) => {
+router.get('/:stockCode', async (req, res, next) => {
   const stockCode = req.params.stockCode;
   const currentPage = req.query.page || 1;
   const limit = 10;
@@ -22,8 +22,8 @@ router.get('/:stockCode', async (req, res) => {
 
   // error handling
   if (data.length === 0) {
-    // back to error handling in server.js
-    next();
+    // back to server.js to handdle error
+    return next();
   };
 
   const rowCount = await connection.queryAsync(
