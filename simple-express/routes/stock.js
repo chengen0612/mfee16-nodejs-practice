@@ -38,6 +38,7 @@ router.get('/:stockCode', async (req, res, next) => {
     stocks : data,
     pagination : {
       number,
+      currentPage,
     }
   });
 });

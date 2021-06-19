@@ -19,4 +19,4 @@ block content
           td #{stock.low_price}
           td #{stock.close_price}
   - for(let i = 1; i <= pagination.number; i++)
-    a(href=`/stock/${code}?page=${i}`) #{i}
+    a(href=`/stock/${code}?page=${i}`, class=i==pagination.currentPage?"active":"") #{i}
