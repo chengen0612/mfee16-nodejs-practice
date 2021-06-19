@@ -47,6 +47,18 @@ app.get('/stock', async (req, res) => {
   });
 });
 
+app.get('/stock/:stockCode', async (req, res) => {
+  let stockCode = req.params.stockCode;
+  let data = await connection.queryAsync('SELECT * FROM stock_price WHERE stock_id = ?;',
+    req.params.stockCode
+  );
+  // console.log(data);
+  res.render('stock/detail', {
+    code : stockCode,
+    stocks : data
+  });
+});
+
 // event listener
 // already set server secretly, no need to create server before routing
 app.listen(3000, async () => {

@@ -1,0 +1,20 @@
+extends ../_layouts/master
+block content 
+  h1 這裡是股票代碼
+  h3 查詢股票 #{code}
+  table 
+    thead
+      tr 
+        th 日期
+        th 開盤價
+        th 最高價
+        th 最低價
+        th 收盤價
+    tbody
+      each stock in stocks
+        tr
+          td #{stock.date}
+          td #{stock.open_price}
+          td #{stock.high_price}
+          td #{stock.low_price}
+          td #{stock.close_price}
