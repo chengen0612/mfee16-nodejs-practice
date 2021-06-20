@@ -55,7 +55,7 @@ app.use((req, res, next) => {
 
 // lastly
 app.use((err, req, res, next) => {
-  console.log(err.message);
+  console.log(`500 error: ${err.message}`);
   res.status(500);
   res.send('伺服器異常，請洽系統管理員');
 });
