@@ -1,38 +1,41 @@
+// built in
 const express = require("express");
 const router = express.Router();
-// 加密
-const bcrypt = require("bcrypt");
+const path = require("path"); // 路徑管理
 
-// 內建 驗證表單
-const { body, validationResult } = require("express-validator");
+// module
+const { body, validationResult } = require("express-validator"); // 表單驗證
+const bcrypt = require("bcrypt"); // 密碼加密
+const multer = require("multer"); // 處理上傳檔案
 
-// 自建 資料庫連線
+// API
 const connection = require("../utils/db");
 
+// middleware
 // 自訂驗證規則
 const registerRules = [
-  body("email").isEmail().withMessage("請正確輸入 Email 格式"),
-  body("password").isLength({ min: 6 }),
-  body("confirmPassword").custom((value, { req }) => {
-    return value === req.body.password;
-  }),
+  body("email").isEmail().withMessage("email 格式錯誤"),
+  body("password")
+    .isLength({ min: 6 })
+    .withMessage("密碼不可少於六位數")
+    .isLength({ max: 10 })
+    .withMessage("密碼不可高於十位數"),
+  body("confirmPassword")
+    .custom((value, { req }) => {
+      return value === req.body.password;
+    })
+    .withMessage("密碼不一致"),
 ];
 
-const path = require("path");
-const multer = require("multer");
-
-// 設定上傳檔案的儲存位置
+// 設定上傳檔案的儲存路徑、檔名...
 const myStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // routes/auth.js -> 現在的位置
-    // public/uploads -> 希望找到的位置
-    // /routes/../public/uploads
     cb(null, path.join(__dirname, "../", "public", "uploads"));
   },
   filename: function (req, file, cb) {
     // 抓出副檔名
     const ext = file.originalname.split(".").pop();
-    // 組合出自己想要的檔案名稱
+    // 組合出想要的檔案名稱
     cb(null, `${file.fieldname}-${Date.now()}.${ext}`);
   },
 });
@@ -41,24 +44,20 @@ const myStorage = multer.diskStorage({
 const uploader = multer({
   storage: myStorage,
   fileFilter: function (req, file, cb) {
-    // console.log(file);
-    //if (file.mimetype !== "image/jpeg") {
-    //  return cb(new Error("不合法的 file type"), false);
-    //}
-    // file.originalname: Name of the file on the user's computer
-    // 101.jpeg
+    // 檢查副檔名
     if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error("是不合格的副檔名"));
+      return cb(new Error("這不是圖片"));
     }
-    // 檔案ＯＫ, 接受這個檔案
+    // 通過檢查
     cb(null, true);
   },
   limits: {
     // 限制檔案的上限 1M
-    fileSize: 1024 * 1024,
+    fileSize: 1048576,
   },
 });
 
+// router
 router.get("/register", (req, res) => {
   res.render("auth/register");
 });
@@ -68,22 +67,24 @@ router.post(
   uploader.single("photo"),
   registerRules,
   async (req, res, next) => {
-    console.log("註冊表單資料: ", req.body);
+    // console.log("表單文字: ", req.body);
+    // console.log("表單檔案: ", req.file);
+    // console.log('dirname: ', __dirname);
 
-    // 取得驗證結果
+    // express-validator 的驗證結果
     const validateResult = validationResult(req);
-    console.log("資料驗證結果: ", validateResult);
+    console.log("欄位驗證結果: ", validateResult);
 
-    // 錯誤處理
+    // 用驗證結果做錯誤處理
     if (!validateResult.isEmpty()) {
       // 回傳的錯誤資料不是空的代表發生錯誤
-      return next(new Error("發生註冊錯誤"));
+      return next(new Error("註冊資料不符規定"));
     }
 
     // 重複註冊
     let exist = await connection.queryAsync(
-      "SELECT * FROM members WHERE name = ?",
-      req.body.name
+      "SELECT * FROM members WHERE email = ?",
+      req.body.email
     );
 
     if (exist.length > 0) {
@@ -91,17 +92,23 @@ router.post(
     }
 
     // 存進資料庫
+    let imgPath = req.file ? "uploads/" + req.file.filename : null;
+    console.log("輸入圖片路徑到資料庫: ", imgPath);
+
     await connection.queryAsync(
-      "INSERT INTO members (email, password, name) VALUES (?)",
+      "INSERT INTO members (email, password, name, photo) VALUES (?)",
       [
         [
           req.body.email,
           await bcrypt.hash(req.body.password, 10),
           req.body.name,
+          imgPath,
         ],
       ]
     );
-    res.send("POST，收到表單資料!");
+
+    res.send("Oh Yeah! Registration accepted!");
+    console.log('註冊成功')
   }
 );
 
