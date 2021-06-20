@@ -1,0 +1,14 @@
+extends ../_layouts/master
+
+block content 
+  h1 running login
+
+  form.form(method="POST", action="/auth/login")
+    div
+      label(for="email") Email
+      input(name="email", type="mail", value="natsu@test.com")
+    div
+      label(for="password") 密碼
+      input(name="password", type="password", value="tester")
+   
+    button(type="submit") 送出

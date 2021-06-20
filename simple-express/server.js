@@ -8,6 +8,9 @@ const connection = require('./utils/db');
 // 網址列設定正確路徑就可以直接找到靜態目錄裡面的檔案
 app.use(express.static('public'));
 
+// 解讀 post 資料的中間件
+app.use(express.urlencoded({ extended : false}));
+
 // app.set('views', 'views');
 // 第一個是固定的變數 views，第二個是檔案夾名稱
 app.set('views', 'views');
@@ -41,6 +44,9 @@ app.use('/stock', stockRouter);
 const apiRouter = require('./routes/api');
 app.use('/api', apiRouter);
 
+const registerRouter = require('./routes/auth');
+app.use('/auth', registerRouter);
+
 // didn't catch by any router above
 app.use((req, res, next) => {
   res.status(404);
@@ -49,6 +55,7 @@ app.use((req, res, next) => {
 
 // lastly
 app.use((err, req, res, next) => {
+  console.log(err.message);
   res.status(500);
   res.send('伺服器異常，請洽系統管理員');
 });
