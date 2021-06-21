@@ -58,6 +58,9 @@ app.use('/api', apiRouter);
 const registerRouter = require('./routes/auth');
 app.use('/auth', registerRouter);
 
+const memberRouter = require('./routes/member');
+app.use('/member', memberRouter);
+
 // catch 404
 app.use((req, res, next) => {
   res.status(404);
