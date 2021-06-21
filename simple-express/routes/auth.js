@@ -71,6 +71,15 @@ router.get("/register", (req, res) => {
   res.render("auth/register");
 });
 
+router.get("/login", (req, res) => {
+  res.render("auth/login");
+});
+
+router.get("/logout", (req, res) => {
+  req.session.member = null;
+  res.redirect(303, "/");
+});
+
 router.post(
   "/register",
   uploader.single("photo"),
@@ -121,10 +130,6 @@ router.post(
   }
 );
 
-router.get("/login", (req, res) => {
-  res.render("auth/login");
-});
-
 router.post("/login", loginRules, async (req, res, next) => {
   const validateResult = validationResult(req);
   console.log("i am error: ", validateResult);
@@ -159,11 +164,6 @@ router.post("/login", loginRules, async (req, res, next) => {
   // console.log('req.session: ', req.session);
 
   res.redirect(303, "/");
-});
-
-router.get('/logout', (req, res) => {
-  req.session.member = null;
-  res.redirect(303, '/');
 });
 
 module.exports = router;
