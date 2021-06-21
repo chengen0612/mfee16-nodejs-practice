@@ -125,8 +125,6 @@ router.get("/login", (req, res) => {
   res.render("auth/login");
 });
 
-// 定登入規則
-
 router.post("/login", loginRules, async (req, res, next) => {
   const validateResult = validationResult(req);
   console.log("i am error: ", validateResult);
@@ -143,14 +141,24 @@ router.post("/login", loginRules, async (req, res, next) => {
   userData = userData[0];
 
   // 比對加密前後的密碼
-  const verification = await bcrypt.compare(req.body.password, userData.password);
+  const verification = await bcrypt.compare(
+    req.body.password,
+    userData.password
+  );
 
   if (!verification) return next(new Error("密碼錯誤"));
 
-  // 設置 cookie
-  // 跳轉
-  console.log(userData);
-  res.send("yeahhhhh");
+  // 設置 session
+  req.session.member = {
+    email: userData.email,
+    name: userData.name,
+    photo: userData.photo || null,
+  };
+
+  // console.log('userData: ', userData);
+  // console.log('req.session: ', req.session);
+
+  res.redirect(303, "/");
 });
 
 module.exports = router;

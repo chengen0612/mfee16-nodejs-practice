@@ -2,6 +2,7 @@
 const express = require('express');
 const app = express();
 const connection = require('./utils/db');
+require('dotenv').config({ path: '/utils/.env' }); // invisible value
 
 // application settings
 app.set('views', 'views');
@@ -15,6 +16,23 @@ app.use(express.urlencoded({ extended : false})); // post reader
 app.use((req, res, next) => {
   let now = new Date().toLocaleString();
   console.log(`有訪客在 ${now} 時來訪`);
+  next();
+});
+
+// modules middleware
+// const cookieParser = require("cookie-parser"); // cookie
+// app.use(cookieParser()); 
+const session = require('express-session'); // session
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+}));
+
+// locals session setup
+app.use((req, res, next) => {
+  app.locals.member = req.session.member;
+  console.log('session in server.js: ', req.session);
   next();
 });
 
@@ -40,12 +58,13 @@ app.use('/api', apiRouter);
 const registerRouter = require('./routes/auth');
 app.use('/auth', registerRouter);
 
-// didn't catch by any router above
+// catch 404
 app.use((req, res, next) => {
   res.status(404);
   res.render('404');
 });
 
+// error handler
 // the very end of the process
 app.use((err, req, res, next) => {
   console.log(`500 error: ${err.message}`);
