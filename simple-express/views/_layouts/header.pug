@@ -5,7 +5,13 @@ ul
     a(href="/") 首頁
   li 
     a(href="/stock") 股票資料
-  li 
-    a(href="/auth/login") 登入
-  li 
-    a(href="/auth/register") 註冊
+  if !member
+    li 
+      a(href="/auth/login") 登入
+    li 
+      a(href="/auth/register") 註冊
+  else
+    li 
+      a(href="/member") 會員中心
+    li 
+      a(href="/auth/logout") 登出
