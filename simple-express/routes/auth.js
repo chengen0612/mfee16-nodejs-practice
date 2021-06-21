@@ -128,24 +128,27 @@ router.get("/login", (req, res) => {
 // 定登入規則
 
 router.post("/login", loginRules, async (req, res, next) => {
-  // 驗證有沒有這筆資料
-  // 找資料庫裡的資料
-  // 用內建函式 compare() 比對 前面為加密前 後面是加密後
-  // console.log("whole form: ", req.body);
   const validateResult = validationResult(req);
   console.log("i am error: ", validateResult);
-  if (validateResult.length > 0) return next(new Error('資料格式不符規定'));
+  if (validateResult.length > 0) return next(new Error("資料格式不符規定"));
 
-  const userData = await connection.queryAsync(
+  let userData = await connection.queryAsync(
     "SELECT * FROM members WHERE email = ?",
     req.body.email
   );
 
-  if (userData.length == 0) return next(new Error("無此帳號"));
+  if (userData.length == 0) return next(new Error("查無此帳號"));
 
-  
-  // 核對密碼
-  // 對了跳轉
+  // get the object
+  userData = userData[0];
+
+  // 比對加密前後的密碼
+  const verification = await bcrypt.compare(req.body.password, userData.password);
+
+  if (!verification) return next(new Error("密碼錯誤"));
+
+  // 設置 cookie
+  // 跳轉
   console.log(userData);
   res.send("yeahhhhh");
 });
