@@ -27,6 +27,15 @@ const registerRules = [
     .withMessage("密碼不一致"),
 ];
 
+const loginRules = [
+  body("email").isEmail().withMessage("email 格式錯誤"),
+  body("password")
+    .isLength({ min: 6 })
+    .withMessage("密碼不可少於六位數")
+    .isLength({ max: 10 })
+    .withMessage("密碼不可高於十位數"),
+];
+
 // 設定上傳檔案的儲存路徑、檔名...
 const myStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -82,7 +91,7 @@ router.post(
     }
 
     // 重複註冊
-    let exist = await connection.queryAsync(
+    const exist = await connection.queryAsync(
       "SELECT * FROM members WHERE email = ?",
       req.body.email
     );
@@ -92,7 +101,7 @@ router.post(
     }
 
     // 存進資料庫
-    let imgPath = req.file ? "uploads/" + req.file.filename : null;
+    const imgPath = req.file ? "uploads/" + req.file.filename : null;
     console.log("輸入圖片路徑到資料庫: ", imgPath);
 
     await connection.queryAsync(
@@ -108,7 +117,7 @@ router.post(
     );
 
     res.send("Oh Yeah! Registration accepted!");
-    console.log('註冊成功')
+    console.log("註冊成功");
   }
 );
 
@@ -118,18 +127,26 @@ router.get("/login", (req, res) => {
 
 // 定登入規則
 
-router.post("/login", async (req, res, next) => {
+router.post("/login", loginRules, async (req, res, next) => {
   // 驗證有沒有這筆資料
   // 找資料庫裡的資料
   // 用內建函式 compare() 比對 前面為加密前 後面是加密後
+  // console.log("whole form: ", req.body);
+  const validateResult = validationResult(req);
+  console.log("i am error: ", validateResult);
+  if (validateResult.length > 0) return next(new Error('資料格式不符規定'));
 
-  let exist = await connection.queryAsync(
+  const userData = await connection.queryAsync(
     "SELECT * FROM members WHERE email = ?",
     req.body.email
   );
 
-  if (exist.length == 0) next(new Error("無此帳號"));
+  if (userData.length == 0) return next(new Error("無此帳號"));
 
+  
+  // 核對密碼
+  // 對了跳轉
+  console.log(userData);
   res.send("yeahhhhh");
 });
 
