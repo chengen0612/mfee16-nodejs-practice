@@ -161,4 +161,9 @@ router.post("/login", loginRules, async (req, res, next) => {
   res.redirect(303, "/");
 });
 
+router.get('/logout', (req, res) => {
+  req.session.member = null;
+  res.redirect(303, '/');
+});
+
 module.exports = router;
