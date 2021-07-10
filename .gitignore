@@ -8,3 +8,5 @@ logs
 .env
 
 simple-express/public/uploads
+
+.vscode
