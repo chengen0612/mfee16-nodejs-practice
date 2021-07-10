@@ -2,9 +2,9 @@
 const express = require('express');
 const app = express();
 const connection = require('./utils/db');
-require('dotenv').config({ path: '/utils/.env' }); // invisible value
+require('dotenv').config({ path: '/utils/.env' }); // environment properties
 
-// application settings
+// application setting
 app.set('views', 'views');
 app.set('view engine', 'pug');
 
@@ -19,7 +19,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// modules middleware
+// module middleware
 // const cookieParser = require("cookie-parser"); // cookie
 // app.use(cookieParser()); 
 const session = require('express-session'); // session
@@ -29,14 +29,23 @@ app.use(session({
   saveUninitialized: false,
 }));
 
-// locals session setup
+// set up member session in app pattern
 app.use((req, res, next) => {
   app.locals.member = req.session.member;
-  console.log('session in server.js: ', req.session);
+  // console.log('session in server.js: ', req.session);
   next();
 });
 
-// router
+// set up message session in res pattern
+app.use((req, res, next) => {
+  res.locals.message = req.session.message;
+  // clear message
+  // if not, it would be passed every time after res.render, but after res.send it would be just fun while it is not an app level session
+  req.session.message = null;
+  next();
+})
+
+// route
 app.get('', (req, res) => {
   res.render('index');
 });

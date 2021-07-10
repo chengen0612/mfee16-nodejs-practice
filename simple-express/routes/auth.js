@@ -106,7 +106,13 @@ router.post(
     );
 
     if (exist.length > 0) {
-      return next(new Error("已經註冊過了"));
+      // return next(new Error("已經註冊過了"));
+      req.session.message = {
+        title: 'Repeated!',
+        greeting: 'Please Try Another One!',
+      }
+      res.redirect(303, '/auth/register');
+      return
     }
 
     // 存進資料庫
@@ -125,14 +131,19 @@ router.post(
       ]
     );
 
-    res.send("Oh Yeah! Registration accepted!");
-    console.log("註冊成功");
+    // 註冊成功
+    // res.send("Oh Yeah! Registration accepted!");
+    req.session.message = {
+      title: 'Register Success!',
+      greeting: 'Sincerely Thanks!',
+    }
+    res.redirect(303, '/');
   }
 );
 
 router.post("/login", loginRules, async (req, res, next) => {
   const validateResult = validationResult(req);
-  console.log("i am error: ", validateResult);
+  // console.log("i am error: ", validateResult);
   if (validateResult.length > 0) return next(new Error("資料格式不符規定"));
 
   let userData = await connection.queryAsync(
@@ -140,7 +151,15 @@ router.post("/login", loginRules, async (req, res, next) => {
     req.body.email
   );
 
-  if (userData.length == 0) return next(new Error("查無此帳號"));
+  if (userData.length == 0) {
+    // return next(new Error("查無此帳號"));
+    req.session.member = null;
+    req.session.message = {
+      title: 'Not Exist!',
+      greeting: 'No Account Was Found!',
+    }
+    return res.redirect(303, '/auth/login');
+  }
 
   // get the object
   userData = userData[0];
@@ -151,17 +170,31 @@ router.post("/login", loginRules, async (req, res, next) => {
     userData.password
   );
 
-  if (!verification) return next(new Error("密碼錯誤"));
+  if (!verification) {
+    // return next(new Error("密碼錯誤"));
+    req.session.member = null;
+    req.session.message = {
+      title: 'Password failed!',
+      greeting: 'One more shot!',
+    }
+    return res.redirect(303, '/auth/login');
+  }
 
-  // 設置 session
+  // 設置會員資料
   req.session.member = {
     email: userData.email,
     name: userData.name,
     photo: userData.photo || null,
   };
 
-  // console.log('userData: ', userData);
-  // console.log('req.session: ', req.session);
+  // 設置訊息
+  req.session.message = {
+    title: 'Login Success!',
+    greeting: 'Nice to see you again!'
+  };
+
+  console.log('userData: ', userData);
+  console.log('req.session: ', req.session);
 
   res.redirect(303, "/");
 });
